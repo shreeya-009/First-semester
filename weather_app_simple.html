@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Title the weather app -->
+  <title>Weather App</title>
+  <style>
+    /* Global styles for resetting margin, padding, and font */
+ * {
+  margin: 0;
+  padding: 0;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+/* Body styles with a background image */
+body {
+  background-image: url(https://cdn.pixabay.com/photo/2023/09/01/14/20/clouds-8227069_1280.png);
+  background-size: cover;
+}
+
+/* Styling for the main container */
+.kill {
+  width: 50%;
+  max-width: 500px;
+  background: linear-gradient(100deg, #1f021f, #62149d);
+  color: darkgray;
+  margin: 100px auto 0;
+  border-radius: 20px;
+  padding: 40px 30px;
+  text-align: center;
+}
+
+/* Styling for search bar */
+.search {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.search input {
+  border: 0;
+  outline: 0;
+  background: lightgoldenrodyellow;
+  color: darkgreen;
+  padding: 10px;
+  height: 30px;
+  border-radius: 25px;
+  flex: 1;
+  margin-right: 16px;
+  font-size: 16px;
+}
+
+.search button {
+  border: 0;
+  outline: 0;
+  background-color: lightslategray;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+}
+
+.search button img {
+  width: 30px;
+}
+
+/* Weather icon and information styles */
+.icon {
+  margin: 10px;
+  width: 120px;
+  margin: top 30px;
+}
+
+.weather h1 {
+  color: white;
+  font-size: 70px;
+  font-weight: 480;
+}
+
+.weather h2 {
+  color: white;
+  font-size: 45px;
+  font-weight: bold;
+}
+
+/* Error message styles */
+.error {
+  text-align: left;
+  margin-left: 10px;
+  font-size: 15px;
+  margin-top: 10px;
+  display: none;
+}
+
+/* Day and date information styles */
+.daydate {
+  color: lightgrey;
+  font-size: medium;
+}
+
+/* Additional weather details styles */
+.details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  margin-top: 60px;
+}
+
+.yo {
+  display: flex;
+  align-items: center;
+  text-align: left;
+}
+
+.yo img {
+  margin: 5px;
+  width: 40px;
+  margin-right: 10px;
+}
+
+.humidity,
+.wind,
+.pressure {
+  font-size: 30px;
+  margin-top: 2px;
+}
+
+/* Footer styles */
+footer {
+  margin: 30px;
+  color: black;
+  font-size: large;
+  font-weight: bold;
+}
+  </style>
+</head>
+
+<body>
+  <!-- Main content of the weather app -->
+  <div class="kill">
+    <!-- Search bar with input and button -->
+    <div class="search">
+      <input type="text" placeholder="Enter city name" spellcheck="false" id="cityInput">
+      <button><img src="https://cdn-icons-png.flaticon.com/128/7902/7902668.png"></button>
+    </div>
+    <!-- Error message for invalid city -->
+    <div class="error">
+      <p>Invalid city</p>
+    </div>
+    <!-- Weather information section -->
+    <div class="weather">
+      <img src="https://cdn-icons-png.flaticon.com/128/10480/10480655.png" class="icon" alt="Weather Icon">
+      <h1 class="temperature">22°C</h1>
+      <h2 class="city">Nabadwip</h2>
+
+      <!-- Day and date information -->
+      <div class="daydate">
+        <div class="date">
+          <span id="dayname">Day</span>,
+          <span id="month">Month</span>
+          <span id="daynum">00</span>,
+          <span id="year">Year</span>
+        </div>
+      </div>
+
+      <!-- Additional weather details -->
+      <div class="details">
+        <div class="yo">
+          <img src="https://cdn-icons-png.flaticon.com/128/8691/8691511.png" alt="Humidity Icon">
+          <div>
+            <p class="humidity">50%</p>
+            <p>Humidity</p>
+          </div>
+        </div>
+        <div class="yo">
+          <img src="https://cdn-icons-png.flaticon.com/128/12051/12051946.png" alt="Pressure Icon">
+          <div>
+            <p class="pressure">1000mb</p>
+            <p>Pressure</p>
+          </div>
+        </div>
+        <div class="yo">
+          <img src="https://cdn-icons-png.flaticon.com/128/2204/2204367.png" alt="Wind Speed Icon">
+          <div>
+            <p class="wind">15 km/hr</p>
+            <p>Wind Speed</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer section -->
+  <footer>
+    <center class="footer"> &#169; Shreeya Pandey 2406794</center>
+  </footer>
+
+  <!-- JavaScript for weather app functionality -->
+  <script>
+    // OpenWeatherMap API key and endpoint
+    const apiKey = "911dee1662d0fb2a6fc09e1c5dc85de7";
+    const apiUrl = "https://api.openweathermap.org/data/2.5/weather?units=metric&q=";
+
+    // DOM elements
+    const searchBox = document.querySelector(".search input");
+    const searchBtn = document.querySelector(".search button");
+    const weatherIcon = document.querySelector(".icon");
+
+    // Function to check weather using OpenWeatherMap API
+    async function checkWeather(city) {
+      const response = await fetch(apiUrl + city + `&appid=${apiKey}`);
+
+      if (!response.ok) {
+        console.error('API request failed:', response.status, response.statusText);
+        return;
+      }
+
+      const data = await response.json();
+      console.log(data);
+
+      if (response.status === 404) {
+        document.querySelector(".error").style.display = "block";
+        document.querySelector(".weather").style.display = "none";
+      } else {
+        // Set weather icon based on weather condition
+        if (data.weather[0].main === "Clear") {
+          weatherIcon.src = "https://cdn-icons-png.flaticon.com/128/10480/10480655.png";
+        } else if (data.weather[0].main === "Clouds") {
+          weatherIcon.src = "https://cdn-icons-png.flaticon.com/128/9755/9755232.png";
+        } else if (data.weather[0].main === "Rain") {
+          weatherIcon.src = "https://cdn-icons-png.flaticon.com/128/1850/1850736.png";
+        } else if (data.weather[0].main === "Mist") {
+          weatherIcon.src = "https://cdn-icons-png.flaticon.com/128/2402/2402913.png";
+        } else if (data.weather[0].main === "Thunderstorm") {
+          weatherIcon.src = "https://cdn-icons-png.flaticon.com/128/1146/1146860.png";
+        }
+
+        // Hide error message and display weather information
+        document.querySelector(".error").style.display = "none";
+        document.querySelector(".weather").style.display = "block";
+
+        // Update weather details in the HTML
+        document.querySelector(".city").innerHTML = data.name;
+        document.querySelector(".temperature").innerHTML = Math.round(data.main.temp) + "°C";
+        document.querySelector(".humidity").innerHTML = data.main.humidity + "%";
+        document.querySelector(".pressure").innerHTML = data.main.pressure + "mb";
+        document.querySelector(".wind").innerHTML = data.wind.speed + "km/hr";
+      }
+    }
+
+    // Function to update the clock in the day and date section
+    function updateClock() {
+      var now = new Date();
+      var dname = now.toLocaleDateString('en-US', {
+        weekday: 'long'
+      });
+      var mon = now.toLocaleDateString('en-US', {
+        month: 'long'
+      });
+      var dnum = now.getDate();
+      var yr = now.getFullYear();
+
+      // Update day and date information in the HTML
+      document.getElementById('dayname').textContent = dname;
+      document.getElementById('month').textContent = mon;
+      document.getElementById('daynum').textContent = dnum;
+      document.getElementById('year').textContent = yr;
+    }
+
+    //add Function to initialize the clock and update it every second
+    function initClock() {
+      updateClock();
+      window.setInterval(updateClock, 1000);
+    }
+
+    // Event listener for the search button to check weather when clicked
+    searchBtn.addEventListener("click", () => {
+      checkWeather(searchBox.value);
+    });
+
+    // Initialize the clock and check weather for a default city (Nabadwip)
+    initClock();
+    checkWeather("Nabadwip");
+  </script>
+</body>
+
+</html>
